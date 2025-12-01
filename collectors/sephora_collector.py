@@ -43,7 +43,7 @@ def is_combo_product(product_name):
     """Check if the product is a combo/set/bundle"""
     combo_keywords = [
         ' combo', ' bundle', ' pack', ' set',
-        ' trio', ' calendar', ' sponge'
+        ' trio', ' calendar', ' sponge', ' refill',
         ' twin', ' duo', ' pair', ' kit', ' collection'
     ]
     
@@ -346,3 +346,4 @@ if __name__ == "__main__":
     print("=" * 50)
     play_completion_sound()
     print("\nResults saved to: sephora_products.csv")
+
