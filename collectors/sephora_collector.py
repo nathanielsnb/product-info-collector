@@ -43,7 +43,6 @@ def is_combo_product(product_name):
     """Check if the product is a combo/set/bundle"""
     combo_keywords = [
         ' combo', ' bundle', ' pack', ' set',
-        ' trio', ' calendar', ' sponge', ' refill',
         ' twin', ' duo', ' pair', ' kit', ' collection'
     ]
     
@@ -70,92 +69,131 @@ def get_all_product_links(category_url):
     while True:
         print(f"\nScraping page {page}...")
         
-        # Simple scroll once (no loops)
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(1)
+        # Scroll to load all products
+        last_height = driver.execute_script("return document.body.scrollHeight")
+        scrolls = 0
+        while scrolls < 3:
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(1)
+            new_height = driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+                break
+            last_height = new_height
+            scrolls += 1
+
+        # Find all product containers on the page
+        product_containers = driver.find_elements(By.CSS_SELECTOR, 
+            "[class*='product'], article, .product-card, .product-tile, [data-comp*='Product']"
+        )
         
-        # Find ONLY product link elements (not all links)
-        product_links = []
+        current_page_links = 0
+        page_combo_count = 0
         
-        # Try specific selectors for product links
-        selectors = [
-            "a[href*='/products/']",  # Main product link pattern
-            ".product-card a",
-            "article a[href*='/products/']",
-            "[data-comp='ProductCard'] a"
-        ]
+        print(f"Found {len(product_containers)} product containers on page {page}")
         
-        for selector in selectors:
+        for container in product_containers:
             try:
-                elements = driver.find_elements(By.CSS_SELECTOR, selector)
-                for element in elements:
+                # Try to extract product name from the listing
+                product_name = ""
+                
+                # Try different selectors for product name on listing page
+                name_selectors = [
+                    "h1, h2, h3, h4",
+                    "[class*='name']",
+                    "[data-at='product_name']",
+                    ".product-name",
+                    ".css-1l5oobi",
+                    "a span",
+                    ".title"
+                ]
+                
+                for selector in name_selectors:
                     try:
-                        href = element.get_attribute("href")
-                        if href:
-                            # Format URL
-                            if href.startswith('/'):
-                                full_url = f"https://www.sephora.my{href}"
-                            else:
-                                full_url = href
-                            
-                            if '/products/' in full_url and full_url not in all_links:
-                                # Check for combo product name in the link text
-                                link_text = element.text.strip()
-                                if link_text and is_combo_product(link_text):
-                                    total_combo_skipped += 1
-                                else:
-                                    product_links.append(full_url)
+                        name_elements = container.find_elements(By.CSS_SELECTOR, selector)
+                        for name_element in name_elements:
+                            if name_element.text.strip():
+                                product_name = name_element.text.strip()
+                                break
+                        if product_name:
+                            break
                     except:
                         continue
                 
-                if product_links:  # Stop if we found links with this selector
-                    break
-                    
-            except:
+                # If we found a product name, check if it's a combo
+                if product_name:
+                    if is_combo_product(product_name):
+                        page_combo_count += 1
+                        continue  # Skip this combo product
+                
+                # Get the product link
+                link_element = container.find_element(By.TAG_NAME, "a")
+                href = link_element.get_attribute("href")
+                
+                if href and ('/products/' in href or '/product/' in href):
+                    if 'sephora.my' in href or href.startswith('/'):
+                        # Format URL
+                        if href.startswith('/'):
+                            full_url = f"https://www.sephora.my{href}"
+                        else:
+                            full_url = href
+                        
+                        # Make sure it's a product URL and not already collected
+                        if full_url not in all_links and '/products/' in full_url:
+                            all_links.add(full_url)
+                            current_page_links += 1
+                            
+            except Exception as e:
+                # If we can't process this container, skip it
                 continue
         
-        # Add new non-combo products
-        new_count = 0
-        for url in product_links:
-            if url not in all_links:
-                all_links.add(url)
-                new_count += 1
+        total_combo_skipped += page_combo_count
         
         print(f"Page {page} Results:")
-        print(f"  • New products found: {new_count} (non-combo only)")
-        print(f"  • Combo products skipped this page: {len(product_links) - new_count}")
+        print(f"  • New products found: {current_page_links}")
+        print(f"  • Combo products skipped: {page_combo_count}")
         print(f"  • Total unique products: {len(all_links)}")
         print(f"  • Total combos skipped so far: {total_combo_skipped}")
         
-        # Stop if no new products
-        if new_count == 0 and page > 1:
-            print("No new products found. Stopping.")
+        # Stop if no products found on this page (and we're past page 1)
+        if current_page_links == 0 and page_combo_count == 0 and page > 1:
+            print("No products found on this page. Stopping pagination.")
             break
-        
-        # Try next page
+            
+        # Try to go to next page
         page += 1
-        next_page_url = f"{category_url.split('?')[0]}?page={page}"
+        next_page_url = ""
         
+        if '?page=' in category_url:
+            base_url = category_url.split('?page=')[0]
+            next_page_url = f"{base_url}?page={page}"
+        elif '?' in category_url:
+            next_page_url = f"{category_url}&page={page}"
+        else:
+            next_page_url = f"{category_url}?page={page}"
+        
+        # Try loading next page
         try:
             driver.get(next_page_url)
-            wait_for_page_load(3)
+            wait_for_page_load()
             
-            # Check if page actually changed
-            if str(page) not in driver.current_url:
-                print("No more pages.")
+            # Check if we're on a different page
+            current_url = driver.current_url
+            if f"page={page}" not in current_url and page > 2:
+                print("No more pages found.")
                 break
                 
-        except:
-            print("Cannot load next page.")
+        except Exception as e:
+            print(f"Cannot navigate to next page: {e}")
             break
-        
-        # Safety
-        if page > 15 or len(all_links) > 100:
-            print("Safety limit reached.")
+            
+        # Safety limit
+        if page > 50:
+            print("Reached page limit (50 pages)")
             break
     
-    print(f"\nTotal non-combo products found: {len(all_links)}")
-    print(f"Total combo products filtered out: {total_combo_skipped}")
+    print(f"\nFinal Results:")
+    print(f"• Total unique products found: {len(all_links)}")
+    print(f"• Total combo products skipped: {total_combo_skipped}")
     
     return list(all_links)
 
@@ -307,6 +345,3 @@ if __name__ == "__main__":
     print("=" * 50)
     play_completion_sound()
     print("\nResults saved to: sephora_products.csv")
-
-
-
