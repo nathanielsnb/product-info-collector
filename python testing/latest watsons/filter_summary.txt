@@ -1,0 +1,133 @@
+WATSONS PRODUCT FILTERING SUMMARY
+========================================
+
+Date: 2025-12-03 11:24:34
+
+📁 Input files:
+  • watsons_products_simple.csv: 3810 products
+  • brandlist.csv: 1899 entries
+
+📊 Results:
+  • Products remaining: 3494
+  • Products removed: 316
+  • Total in combined file: 3810
+
+🔠 Sorting applied:
+  • Alphabetically by brand name
+  • Then alphabetically by product name within each brand
+
+🗑️ Removed products by brand:
+  • SUISAI: 14
+  • COSMODERM: 11
+  • KOSE COSMEPORT: 9
+  • VASELINE: 9
+  • NIVEA LUMINOUS 630: 8
+  • BEAUTY OF JOSEON: 8
+  • MOIST DIANE: 8
+  • NANO WHITE: 8
+  • JMSOLUTION: 7
+  • NUNATURE: 7
+  • CETAPHIL: 7
+  • HEAD&SHOULDERS: 7
+  • OLAY: 7
+  • SENKA: 7
+  • WATSONS: 6
+  • NEUTROGENA: 6
+  • NIVEA: 6
+  • SOME BY MI: 5
+  • SIMPLE: 5
+  • HIMALAYA: 4
+  • BIO-ESSENCE: 4
+  • ARENCIA: 4
+  • NIVEA FOR MEN: 4
+  • ROSKEN: 4
+  • SCHWARZKOPF: 4
+  • ST IVES: 4
+  • ORBIS: 4
+  • SKIN1004: 3
+  • BIODANCE: 3
+  • GATSBY: 3
+  • DOVE: 3
+  • BRINGGREEN: 3
+  • KOMFYMED: 3
+  • NUMBUZIN: 3
+  • MIZUMI: 3
+  • MENTHOLATUM LIPCARE: 3
+  • WARDAH: 3
+  • NATURALS BY WATSONS: 3
+  • BATISTE: 3
+  • FREEMAN: 3
+  • BIORE: 3
+  • DERMACTION PLUS BY WATSONS: 3
+  • GLAD2GLOW: 2
+  • COSRX: 2
+  • PIXY: 2
+  • SEBAMED: 2
+  • SUKIN: 2
+  • SAFI: 2
+  • LITTLE DREAM GARDEN: 2
+  • REGAN: 2
+  • OFF & RELAX: 2
+  • 50 MEGUMI: 2
+  • BANANA BOAT: 2
+  • AZARINE: 2
+  • ALLERGAN: 2
+  • DR FOR HAIR: 2
+  • HERBAL ESSENCES: 2
+  • KLORANE: 2
+  • LACTACYD: 2
+  • HUXLEY: 2
+  • CLINELLE: 2
+  • DRYOPE: 2
+  • COLLAGEN BY WATSONS: 2
+  • CARASUN: 2
+  • HADA LABO: 2
+  • & HONEY: 1
+  • AHC: 1
+  • EUCERIN: 1
+  • DR. DERMIS: 1
+  • CLEAN & CLEAR: 1
+  • DERMATORY: 1
+  • DR ALTHEA: 1
+  • CLEAR MEN: 1
+  • AROMASE: 1
+  • AVEENO: 1
+  • BIFESTA: 1
+  • HATHERINE: 1
+  • HARUHARU WONDER: 1
+  • GARNIER: 1
+  • GOTE: 1
+  • DR. LEO: 1
+  • EMINA: 1
+  • EQQUALBERRY: 1
+  • NARUKO: 1
+  • L'OREAL PARIS SKIN CARE: 1
+  • MEG RHYTHM: 1
+  • HYGR: 1
+  • HOUSE OF HUR: 1
+  • MOMOTANI: 1
+  • MENTHOLATUM MEN: 1
+  • MEN'S BIORE: 1
+  • MENTHOLATUM ACNES: 1
+  • NUTOX: 1
+  • NATURVITAL: 1
+  • MY SCHEMING: 1
+  • RURUBERRY: 1
+  • OXY: 1
+  • PALMER'S: 1
+  • PLANTUR 39: 1
+  • PURE BEAUTY: 1
+  • SEA MAKEUP: 1
+  • SABORINO: 1
+  • ROSETTE: 1
+  • SILKYGIRL: 1
+  • TARGET PRO BY WATSONS: 1
+  • SUNSILK: 1
+  • SUNPLAY: 1
+  • Y.O.U: 1
+
+📂 Output files:
+  1. watsons_products_combined_sorted.csv - ALL products sorted with checkbox (✅=taken, □=not taken)
+  2. watsons_products_remaining_sorted.csv - Only products to photograph (sorted)
+  3. watsons_products_removed_sorted.csv - Only already taken products (sorted)
+  4. filter_summary.txt - This summary file
